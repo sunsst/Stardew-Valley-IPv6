@@ -6,7 +6,7 @@ namespace Lidgren.Network
 	/// <summary>
 	/// Specialized version of NetPeer used for "server" peers
 	/// </summary>
-	public class NetServer : NetPeer
+	public partial class NetServer : NetPeer
 	{
 		/// <summary>
 		/// NetServer constructor

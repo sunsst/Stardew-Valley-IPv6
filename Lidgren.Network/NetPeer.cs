@@ -143,7 +143,7 @@ namespace Lidgren.Network
 		/// <summary>
 		/// Binds to socket and spawns the networking thread
 		/// </summary>
-		public void Start()
+		public virtual void Start()
 		{
 			if (m_status != NetPeerStatus.NotRunning)
 			{
