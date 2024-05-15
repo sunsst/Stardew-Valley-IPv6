@@ -137,8 +137,10 @@ namespace Lidgren.Network
 
 			if (initialCapacity > 0)
 				retval.m_data = GetStorage(initialCapacity);
+            else if (initialCapacity == 0)
+                retval.m_data = [];
 
-			return retval;
+            return retval;
 		}
 
 		internal NetIncomingMessage CreateIncomingMessage(NetIncomingMessageType tp, byte[] useStorageData)
