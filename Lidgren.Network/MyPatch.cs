@@ -6,9 +6,13 @@ using System.Reflection;
 
 namespace Lidgren.Network
 {
-    internal class MyPatch
+    internal static class MyPatch
     {
         private static readonly (object log, MethodInfo InfoMethod) log;
+
+#if DEBUG
+        private static readonly MethodInfo harmonylog;
+#endif
 
         private static readonly MethodInfo playSound;
         private static readonly (object input, MethodInfo GetKeyboardStateMethod, MethodInfo IsKeyDownMethod, object D4, object D6) input;
@@ -29,6 +33,13 @@ namespace Lidgren.Network
                     ?? throw new Exception("Class StardewValley.Game1 error");
 
                 // 日志接口
+#if DEBUG
+                Type FileLogType = hAssembly.GetType("HarmonyLib.FileLog")
+                    ?? throw new Exception("Class HarmonyLib.FileLog error");
+                harmonylog = FileLogType.GetMethod("Log", BindingFlags.Static | BindingFlags.Public, [typeof(string)])
+                    ?? throw new Exception($"Method {FileLogType.FullName}.Log() error");
+#endif
+
                 log.log = Game1Type.GetField("log", BindingFlags.Static | BindingFlags.NonPublic)
                     ?.GetValue(null)!
                     ?? throw new Exception($"Field {Game1Type.FullName}.log error");
@@ -36,7 +47,6 @@ namespace Lidgren.Network
                 log.InfoMethod = log.log.GetType()
                     ?.GetMethod("Info", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, [typeof(string)])
                     ?? throw new Exception($"Method {Game1Type.FullName}.log.Info() error");
-
 
                 // 输入接口
                 input.input = Game1Type.GetField("input", BindingFlags.Static | BindingFlags.Public)
@@ -113,12 +123,14 @@ namespace Lidgren.Network
                 pm.Invoke(h, [attemptConnection, hm, null, null, null]);
 
                 ok = true;
+                LogInfo("patch ok!");
             }
 #if DEBUG
             catch (Exception e)
             {
-                System.IO.File.WriteAllText("_log.txt", e.ToString());
+                LogInfo(e.ToString());
                 playSound = null!;
+                harmonylog = null!;
             }
 #else
             catch
@@ -128,9 +140,22 @@ namespace Lidgren.Network
 #endif
         }
 
-        public static void LogInfo(string msg)
+        public static void GameLog(string msg)
         {
             log.InfoMethod.Invoke(log.log, [msg]);
+#if DEBUG
+            harmonylog.Invoke(null, [msg]);
+#endif
+        }
+
+        public static void LogInfo(string msg)
+        {
+#if DEBUG
+            if (ok)
+                harmonylog.Invoke(null, [msg]);
+            else
+                System.IO.File.AppendAllText("_log.txt", msg);
+#endif
         }
 
 
@@ -165,12 +190,22 @@ namespace Lidgren.Network
 
         private static bool attemptConnection(object __instance)
         {
+            if (ok)
+            {
+                LogInfo("method attemptConnection patched");
+            }
+            else
+            {
+                LogInfo($"method attemptConnection patched, but ok={false}");
+                return true;
+            }
+
             int port = 24642;
             var address = (string)clientFiled.address.GetValue(__instance)!;
             var client = (NetClient)clientFiled.client.GetValue(__instance)!;
             bool enableIPv6 = false;
 
-            // 解析地址
+            // 解析IP地址
             if (IPEndPoint.TryParse(address, out var res))
             {
                 if (res.Port > 0)
@@ -185,16 +220,16 @@ namespace Lidgren.Network
             {
                 if (enableIPv6)
                 {
-                    LogInfo("client enable IPv6");
+                    GameLog("client enable IPv6");
                     client.m_configuration.LocalAddress = IPAddress.IPv6Any;
                 }
                 else
                 {
-                    LogInfo("client enable IPv4");
+                    GameLog("client enable IPv4");
                 }
                 client.Start();
             }
-            LogInfo($"client target address {address} port {port}");
+            GameLog($"client target address {address} port {port}");
 
             client.DiscoverKnownPeer(address, port);
             clientFiled.lastAttemptMs.SetValue(__instance, DateTime.UtcNow.TimeOfDay.TotalMilliseconds);

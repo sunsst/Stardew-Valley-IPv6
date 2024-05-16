@@ -9,29 +9,32 @@ namespace Lidgren.Network
         /// </summary>
         public override void Start()
         {
-            if (MyPatch.ok
-                && MyPatch.CallServerStarCheck()
-                && Status == NetPeerStatus.NotRunning)
+            if (MyPatch.ok)
             {
-                switch (MyPatch.ChooseIPMode())
+                MyPatch.LogInfo($"call {GetType().FullName}.Start() ");
+                if (MyPatch.CallServerStarCheck() && Status == NetPeerStatus.NotRunning)
                 {
-                    case MyPatch.IPMode.IPv4:
-                        MyPatch.LogInfo("server enable IPv4");
-                        MyPatch.PlaySound("cat");
-                        break;
-                    case MyPatch.IPMode.IPv6:
-                        m_configuration.LocalAddress = IPAddress.IPv6Any;
-                        MyPatch.LogInfo("server enable IPv6");
-                        MyPatch.PlaySound("dog_bark");
-                        break;
-                    default:
-                    case MyPatch.IPMode.IPv4IPv6:
-                        m_configuration.DualStack = true;
-                        m_configuration.LocalAddress = IPAddress.IPv6Any;
-                        MyPatch.LogInfo("server enable IPv4 and IPv6");
-                        MyPatch.PlaySound("cat");
-                        MyPatch.PlaySound("dog_bark");
-                        break;
+                    MyPatch.LogInfo($"set {GetType().FullName}.m_configuration ");
+                    switch (MyPatch.ChooseIPMode())
+                    {
+                        case MyPatch.IPMode.IPv4:
+                            MyPatch.PlaySound("cat");
+                            MyPatch.GameLog("server enable IPv4");
+                            break;
+                        case MyPatch.IPMode.IPv6:
+                            m_configuration.LocalAddress = IPAddress.IPv6Any;
+                            MyPatch.PlaySound("dog_bark");
+                            MyPatch.GameLog("server enable IPv6");
+                            break;
+                        default:
+                        case MyPatch.IPMode.IPv4IPv6:
+                            m_configuration.DualStack = true;
+                            m_configuration.LocalAddress = IPAddress.IPv6Any;
+                            MyPatch.PlaySound("cat");
+                            MyPatch.PlaySound("dog_bark");
+                            MyPatch.GameLog("server enable IPv4 and IPv6");
+                            break;
+                    }
                 }
             }
             base.Start();
