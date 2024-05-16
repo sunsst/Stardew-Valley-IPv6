@@ -8,6 +8,7 @@ using slnet::Lidgren.Network;
 using StardewValley;
 using StardewValley.Network;
 using System.Net;
+using System.Text.RegularExpressions;
 
 namespace IPv6.Patch.Classes;
 
@@ -61,17 +62,33 @@ public class LidgrenClient : HookableClient
         config.PingInterval = 5f;
         config.MaximumTransmissionUnit = 1200;
 
-        if (IPAddress.TryParse(address, out var addr)
-            && addr.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6)
+        if (!IPEndPoint.TryParse(address, out var addr))
+        {
+            var res = Regex.Match(address, @"^(.+?)(?:\:([0-9]+))?$");
+            if (res.Success)
+            {
+                try
+                {
+                    addr = NetUtility.Resolve(res.Groups[1].Value,
+                    res.Groups[2].Value != "" ? int.Parse(res.Groups[2].Value) : 0);
+                }
+                catch { }
+                if (addr != null)
+                {
+                    MyPatch.GameLog($"{address} => {addr}");
+                    address = addr.ToString();
+                }
+            }
+        }
+        if (addr != null && addr.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6)
         {
             config.LocalAddress = IPAddress.IPv6Any;
-            MyPatch.GameLog("client enable IPv6");
+            MyPatch.GameLog($"client enable IPv6");
         }
         else
         {
-            MyPatch.GameLog("client enable IPv4");
+            MyPatch.GameLog($"client enable IPv4");
         }
-
 
         client = new NetClient(config);
         client.Start();
