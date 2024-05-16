@@ -14,7 +14,7 @@ internal static class GameServer
     public static void UpdateLocalOnlyFlag(object __instance)
     {
 #if DEBUG
-        MyPatch.log.Info($"method {typeof(GameServer).FullName}.UpdateLocalOnlyFlag() patched");
+        MyPatch.LogInfo($"method {typeof(GameServer).FullName}.UpdateLocalOnlyFlag() patched");
 #endif
         if (!Game1.game1.IsMainInstance)
         {

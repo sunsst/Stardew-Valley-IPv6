@@ -41,7 +41,7 @@ public class LidgrenServer : HookableServer
     {
         this._gameServer = gameServer;
 #if DEBUG
-        MyPatch.log.Info($"class {GetType().FullName} patched");
+        MyPatch.LogInfo($"class {GetType().FullName} patched");
 #endif
     }
 
@@ -126,18 +126,18 @@ public class LidgrenServer : HookableServer
         switch (MyPatch.ChooseIPMode)
         {
             case MyPatch.IPMode.IPv4:
-                MyPatch.log.Info("server enable IPv4");
+                MyPatch.GameLog("server enable IPv4");
                 Game1.playSound("cat");
                 break;
             case MyPatch.IPMode.IPv6:
                 config.LocalAddress = IPAddress.IPv6Any;
-                MyPatch.log.Info("server enable IPv6");
+                MyPatch.GameLog("server enable IPv6");
                 Game1.playSound("dog_bark");
                 break;
             default:
                 config.DualStack = true;
                 config.LocalAddress = IPAddress.IPv6Any;
-                MyPatch.log.Info("server enable IPv4 and IPv6");
+                MyPatch.GameLog("server enable IPv4 and IPv6");
                 Game1.playSound("dog_bark");
                 Game1.playSound("cat");
                 break;
