@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace Lidgren.Network
 {
@@ -203,32 +204,49 @@ namespace Lidgren.Network
             int port = 24642;
             var address = (string)clientFiled.address.GetValue(__instance)!;
             var client = (NetClient)clientFiled.client.GetValue(__instance)!;
-            bool enableIPv6 = false;
 
-            // 解析IP地址
-            if (IPEndPoint.TryParse(address, out var res))
+            if (!IPEndPoint.TryParse(address, out var addr))
             {
-                if (res.Port > 0)
-                    port = res.Port;
-                address = res.Address.ToString();
-                clientFiled.address.SetValue(__instance, address);
-                enableIPv6 = res.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6;
+                var res = Regex.Match(address, @"^(.+?)(?:\:([0-9]+))?$");
+                if (res.Success)
+                {
+                    try
+                    {
+                        addr = NetUtility.Resolve(res.Groups[1].Value,
+                        res.Groups[2].Value != "" ? int.Parse(res.Groups[2].Value) : 0);
+                    }
+                    catch { }
+                    if (addr != null)
+                    {
+                        GameLog($"{address} => {addr}");
+                        address = addr.ToString();
+                        clientFiled.address.SetValue(__instance, address);
+                    }
+                }
             }
 
-            // 如果还没有启动则修改配置项后启动
             if (client.Status == NetPeerStatus.NotRunning)
             {
-                if (enableIPv6)
+                if (addr != null && addr.AddressFamily == AddressFamily.InterNetworkV6)
                 {
-                    GameLog("client enable IPv6");
                     client.m_configuration.LocalAddress = IPAddress.IPv6Any;
+                    GameLog($"client enable IPv6");
                 }
                 else
                 {
-                    GameLog("client enable IPv4");
+                    GameLog($"client enable IPv4");
                 }
                 client.Start();
             }
+
+            if (addr != null)
+            {
+                if (addr.Port != 0)
+                    port = addr.Port;
+                address= addr.Address.ToString();
+                clientFiled.address.SetValue(__instance, address);
+            }
+
             GameLog($"client target address {address} port {port}");
 
             client.DiscoverKnownPeer(address, port);
