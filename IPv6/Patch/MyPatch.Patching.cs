@@ -1,12 +1,7 @@
 ﻿using HarmonyLib;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using StardewModdingAPI;
+using System.Reflection;
+using System.Reflection.Emit;
 
 namespace IPv6.Patch
 {
@@ -17,6 +12,14 @@ namespace IPv6.Patch
 #if DEBUG
             FileLog.Log(msg);
 #endif
+        }
+
+        public static void GameLog(string msg)
+        {
+#if DEBUG
+            FileLog.Log(msg);
+#endif
+            log.Info(msg);
         }
 
         public static void CheckSomeTypes(this CodeInstruction code)

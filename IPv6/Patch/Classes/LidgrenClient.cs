@@ -33,7 +33,7 @@ public class LidgrenClient : HookableClient
     {
         this.address = address;
 #if DEBUG
-        MyPatch.log.Info($"class {GetType().FullName} patched");
+        MyPatch.LogInfo($"class {GetType().FullName} patched");
 #endif
     }
 
@@ -65,11 +65,11 @@ public class LidgrenClient : HookableClient
             && addr.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6)
         {
             config.LocalAddress = IPAddress.IPv6Any;
-            MyPatch.log.Info("client enable IPv6");
+            MyPatch.GameLog("client enable IPv6");
         }
         else
         {
-            MyPatch.log.Info("client enable IPv4");
+            MyPatch.GameLog("client enable IPv4");
         }
 
 
@@ -88,7 +88,7 @@ public class LidgrenClient : HookableClient
                 port = addr.Port;
             address = addr.Address.ToString();
         }
-        MyPatch.log.Info($"client target address {address} port {port}");
+        MyPatch.GameLog($"client target address {address} port {port}");
 
         client.DiscoverKnownPeer(address, port);
         lastAttemptMs = DateTime.UtcNow.TimeOfDay.TotalMilliseconds;
