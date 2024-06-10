@@ -1,12 +1,10 @@
 ﻿extern alias slnet;
-using slnet::Lidgren.Network;
 using HarmonyLib;
 using StardewModdingAPI;
-using StardewValley.Network.Compress;
-using StardewValley.Logging;
 using StardewValley;
+using StardewValley.Logging;
 using StardewValley.Network;
-using System.Runtime.CompilerServices;
+using StardewValley.Network.Compress;
 using System.Net.Sockets;
 
 namespace IPv6.Patch;

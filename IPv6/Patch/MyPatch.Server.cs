@@ -8,7 +8,7 @@ internal static partial class MyPatch
 {
     public static HarmonyMethod ServerTranspiler = new HarmonyMethod(typeof(MyPatch), "ServerTranspilerMethod");
 
-        public static IEnumerable<CodeInstruction> ServerTranspilerMethod(IEnumerable<CodeInstruction> instructions, MethodBase __originalMethod)
+    public static IEnumerable<CodeInstruction> ServerTranspilerMethod(IEnumerable<CodeInstruction> instructions, MethodBase __originalMethod)
     {
         LogInfo($"\n========== server | {__originalMethod.DeclaringType}:{__originalMethod.Name}() ==========");
 

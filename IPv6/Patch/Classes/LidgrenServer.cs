@@ -127,19 +127,18 @@ public class LidgrenServer : HookableServer
         {
             case MyPatch.IPMode.IPv4:
                 MyPatch.GameLog("server enable IPv4");
-                Game1.playSound("cat");
+                Game1.addHUDMessage(new("服务器仅支持 IPv4 客户端连接", HUDMessage.newQuest_type));
                 break;
             case MyPatch.IPMode.IPv6:
                 config.LocalAddress = IPAddress.IPv6Any;
                 MyPatch.GameLog("server enable IPv6");
-                Game1.playSound("dog_bark");
+                Game1.addHUDMessage(new("服务器仅支持 IPv6 客户端连接", HUDMessage.newQuest_type));
                 break;
             default:
                 config.DualStack = true;
                 config.LocalAddress = IPAddress.IPv6Any;
-                MyPatch.GameLog("server enable IPv4 and IPv6");
-                Game1.playSound("dog_bark");
-                Game1.playSound("cat");
+                MyPatch.GameLog("server enable IPv4 and IPv6"); 
+                Game1.addHUDMessage(new("服务器支持 IPv4 与 IPv6 客户端连接", HUDMessage.newQuest_type));
                 break;
         }
 
