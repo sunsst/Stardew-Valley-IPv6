@@ -15,7 +15,8 @@ namespace Lidgren.Network
         private static readonly MethodInfo harmonylog;
 #endif
 
-        private static readonly MethodInfo playSound;
+        // private static readonly MethodInfo playSound;
+        private static readonly (MethodInfo addHUDMessage, Type t, object flag) hudMessage;
         private static readonly (object input, MethodInfo GetKeyboardStateMethod, MethodInfo IsKeyDownMethod, object D4, object D6) input;
         public static readonly (FieldInfo address, FieldInfo lastAttemptMs, FieldInfo client) clientFiled;
 
@@ -75,9 +76,14 @@ namespace Lidgren.Network
                    ?.GetValue(null)
                    ?? throw new Exception($"Field Keys.D6 error");
 
-                // 音效播放接口
-                playSound = Game1Type.GetMethod("playSound", BindingFlags.Static | BindingFlags.Public, [typeof(string), typeof(int?)])
-                    ?? throw new Exception($"Method {Game1Type.FullName}.playSound() error");
+                // 横幅消息UI接口
+                hudMessage.t = svAssembly.GetType("StardewValley.HUDMessage")
+                    ?? throw new Exception("Class StardewValley.HUDMessage error");
+                hudMessage.addHUDMessage = Game1Type.GetMethod("addHUDMessage", BindingFlags.Static | BindingFlags.Public, [hudMessage.t])
+                   ?? throw new Exception($"Method {Game1Type.FullName}.addHUDMessage() error");
+                hudMessage.flag = hudMessage.t.GetField("newQuest_type", BindingFlags.Static | BindingFlags.Public)
+                    ?.GetValue(null)
+                    ?? throw new Exception($"Field {hudMessage.t.FullName}.newQuest_type error");
 
                 // 客户端接口
                 Type LidgrenClientType = svAssembly.GetType("StardewValley.Network.LidgrenClient")
@@ -130,13 +136,11 @@ namespace Lidgren.Network
             catch (Exception e)
             {
                 LogInfo(e.ToString());
-                playSound = null!;
                 harmonylog = null!;
             }
 #else
             catch
             {
-                playSound = null!;
             }
 #endif
         }
@@ -184,9 +188,10 @@ namespace Lidgren.Network
                 return IPMode.IPv4IPv6;
         }
 
-        public static void PlaySound(string cueName)
+        public static void addHUDMessage(string message)
         {
-            playSound.Invoke(null, [cueName, null]);
+            var v = Activator.CreateInstance(hudMessage.t, [message, hudMessage.flag]);
+            hudMessage.addHUDMessage.Invoke(null, [v]);
         }
 
         private static bool attemptConnection(object __instance)
@@ -243,7 +248,7 @@ namespace Lidgren.Network
             {
                 if (addr.Port != 0)
                     port = addr.Port;
-                address= addr.Address.ToString();
+                address = addr.Address.ToString();
                 clientFiled.address.SetValue(__instance, address);
             }
 
