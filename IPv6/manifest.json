@@ -1,10 +1,10 @@
 ﻿{
   "Name": "IPv6",
-  "Author": "v6",
-  "Version": "0.1.0",
+  "Author": "sunsst",
+  "Version": "1.0.0",
   "Description": "IPv6 for Stardew Valley",
-  "UniqueID": "v6.IPv6",
+  "UniqueID": "sunsst.IPv6",
   "EntryDll": "IPv6.dll",
   "MinimumApiVersion": "3.0.0",
-  "UpdateKeys": []
+  "UpdateKeys": [ "GitHub:sunsst/Stardew-Valley-IPv6" ]
 }
