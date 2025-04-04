@@ -57,7 +57,7 @@ namespace IPv6.Patch
 
             foreach (var m in new MethodBase[] {
            AccessTools.Method(typeof(StardewValley.Game1), "UpdateTitleScreen"),
-           AccessTools.Method(typeof(StardewValley.Menus.CoopMenu), "enterIPPressed"),
+           AccessTools.Method(typeof(StardewValley.Menus.CoopGameMenu), "enterIPPressed"),
            AccessTools.Method(typeof(StardewValley.Multiplayer), "LogDisconnect")})
             {
                 Harmony.Patch(m, transpiler: ClientTranspiler);
