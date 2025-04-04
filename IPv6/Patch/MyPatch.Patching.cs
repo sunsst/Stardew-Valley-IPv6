@@ -48,7 +48,11 @@ namespace IPv6.Patch
                 Harmony.Patch(m, transpiler: transpiler);
             }
         }
-
+        
+        private static void TitleTextInputMenu_Postfix(StardewValley.Menus.TitleTextInputMenu __instance, string title, StardewValley.Menus.NamingMenu.doneNamingBehavior b, string default_text, string context, bool filterInput)
+        {
+            __instance.textBox.textLimit = 100;
+        }
 
         public static void Patching(IModHelper helper, string harmonyID)
         {
@@ -62,6 +66,11 @@ namespace IPv6.Patch
             {
                 Harmony.Patch(m, transpiler: ClientTranspiler);
             }
+            
+            var original = AccessTools.Constructor(typeof(StardewValley.Menus.TitleTextInputMenu), new Type[] { typeof(string), typeof(StardewValley.Menus.NamingMenu.doneNamingBehavior), typeof(string), typeof(string), typeof(bool) });
+            var postfix = typeof(MyPatch).GetMethod(nameof(TitleTextInputMenu_Postfix), BindingFlags.Static | BindingFlags.NonPublic);
+            harmony.Patch(original, postfix: new HarmonyMethod(postfix));
+
 
             Harmony.Patch(AccessTools.Constructor(typeof(StardewValley.Network.GameServer), new Type[] { typeof(bool) }), transpiler: ServerTranspiler);
 
