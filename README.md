@@ -1,4 +1,8 @@
 # Stardew Valley IPv6
+[简体中文](https://github.com/sunsst/Stardew-Valley-IPv6/blob/IPv6/README.md)
+
+[English](https://github.com/sunsst/Stardew-Valley-IPv6/blob/IPv6/README_EN.md)
+
 让星露谷物语也能使用 IPv6 地址进行联机。
 
 引用的项目：
@@ -70,10 +74,18 @@
 
 配置选项的更改是通过 `Class Lidgren.Network.NetServer` 与 `Class Lidgren.Network.NetClient` 覆写 `Method Lidgren.Network.NetPeer.Start()` 方法实现的。
 
+#### 关于安卓
+在[模组:在Android上安装SMAPI][wiki]中有提到：
+由于Android上的《星露谷物语》与其他平台上的游戏版本架构差异较大，因此官方版本的 SMAPI 不兼容 Android 版的游戏。有人将 SMAPI 移植到了 Android 平台，此移植版兼容大部分基于 SMAPI 的模组和内容包（包括Content Patcher，Farm Type Manager，Json Assets 和 PyTK 等基础框架），但也有一些Mod可能不兼容。
+
+经过[@nkanf-dev][nkanf]的帮助得以兼容。安卓下与原有流程不同的是：
+- 原有对 `Method StardewValley.Menus.CoopMenu.enterIPPressed()` 的更改将改为对 `Method StardewValley.Menus.CoopGameMenu.enterIPPressed()` 的更改。
+- 修改 `Field StardewValley.Menus.TitleTextInputMenu.textBox.textLimit` 以允许输入更多的字符。
 
 
 [lnet]: https://github.com/lidgren/lidgren-network-gen3
 [slnet]: https://github.com/space-wizards/SpaceWizards.Lidgren.Network
 [har]: https://github.com/pardeike/Harmony
 [smapi]: https://github.com/Pathoschild/SMAPI
-
+[wiki]: https://zh.stardewvalleywiki.com/%E6%A8%A1%E7%BB%84:%E5%9C%A8Android%E4%B8%8A%E5%AE%89%E8%A3%85SMAPI
+[nkanf]: https://github.com/nkanf-dev

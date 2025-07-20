@@ -1,7 +1,7 @@
 ﻿{
   "Name": "IPv6",
   "Author": "sunsst",
-  "Version": "1.0.1",
+  "Version": "1.1.0",
   "Description": "IPv6 for Stardew Valley",
   "UniqueID": "sunsst.IPv6",
   "EntryDll": "IPv6.dll",
